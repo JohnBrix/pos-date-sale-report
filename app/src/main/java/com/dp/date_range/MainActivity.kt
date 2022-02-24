@@ -108,6 +108,8 @@ class MainActivity : AppCompatActivity() {
                 " [" + d.getSQLDateFormat(currentTime) + "] "
             currentBox.textSize = 16f
 
+            Toast.makeText(this, "DAILY ${d.getSQLDateFormat(currentTime)}", Toast.LENGTH_SHORT).show()
+
         } else if (period == WEEKLY) {
             while (cTime[Calendar.DAY_OF_WEEK] == Calendar.SUNDAY) {
                 cTime.add(Calendar.DATE, -1)
@@ -119,15 +121,17 @@ class MainActivity : AppCompatActivity() {
             toShow += d.getSQLDateFormat(eTime).toString() + "] "
             currentBox.textSize = 16f
             currentBox.text = toShow
+            Toast.makeText(this, "WEEKLY ${toShow}", Toast.LENGTH_SHORT).show()
 
         } else if (period == MONTHLY) {
             cTime[Calendar.DATE] = 1
             eTime = cTime.clone() as Calendar
             eTime.add(Calendar.MONTH, 1)
             eTime.add(Calendar.DATE, -1)
-            currentBox!!.textSize = 18f
-            currentBox!!.text =
+            currentBox.textSize = 18f
+            currentBox.text =
                 " [" + currentTime!![Calendar.YEAR] + "-" + (currentTime!![Calendar.MONTH] + 1) + "] "
+            Toast.makeText(this, "MONTHLY ${ currentBox.text.toString()}", Toast.LENGTH_SHORT).show()
 
         } else if (period == YEARLY) {
             cTime[Calendar.DATE] = 1
@@ -137,6 +141,8 @@ class MainActivity : AppCompatActivity() {
             eTime.add(Calendar.DATE, -1)
             currentBox!!.textSize = 20f
             currentBox!!.text = " [" + currentTime!![Calendar.YEAR] + "] "
+            Toast.makeText(this, "YEARLY ${ currentBox.text.toString()}", Toast.LENGTH_SHORT).show()
+
         }
         currentTime = cTime
         /*list = saleLedger.getAllSaleDuring(cTime, eTime)*/
