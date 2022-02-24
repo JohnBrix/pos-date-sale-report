@@ -7,6 +7,20 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="20dp">
+        <TextView
+            android:id="@+id/currentBox"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:textSize="5sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
         <Spinner
@@ -23,15 +37,6 @@
             android:text="@string/previous"
             android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/currentBox"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:gravity="center"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
         <Button
             android:id="@+id/nextButton"
             android:layout_width="wrap_content"
@@ -40,16 +45,5 @@
             android:text="@string/next"
             android:textSize="16sp" />
     </LinearLayout>
-
-    <!--
-    <EditText
-        android:id="@+id/searchBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter invoice ID here." >
-    </EditText>
-    -->
-
-
 
 </LinearLayout>
