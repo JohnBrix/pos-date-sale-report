@@ -121,7 +121,9 @@ class MainActivity : AppCompatActivity() {
             toShow += d.getSQLDateFormat(eTime).toString() + "] "
             currentBox.textSize = 16f
             currentBox.text = toShow
-            Toast.makeText(this, "WEEKLY ${toShow}", Toast.LENGTH_SHORT).show()
+
+            var separate = "${d.getSQLDateFormat(cTime)} and ${d.getSQLDateFormat(eTime)}"
+            Toast.makeText(this, "WEEKLY ${separate}", Toast.LENGTH_SHORT).show()
 
         } else if (period == MONTHLY) {
             cTime[Calendar.DATE] = 1
@@ -131,7 +133,9 @@ class MainActivity : AppCompatActivity() {
             currentBox.textSize = 18f
             currentBox.text =
                 " [" + currentTime!![Calendar.YEAR] + "-" + (currentTime!![Calendar.MONTH] + 1) + "] "
-            Toast.makeText(this, "MONTHLY ${ currentBox.text.toString()}", Toast.LENGTH_SHORT).show()
+
+            var separate = "${currentTime!![Calendar.YEAR]} and ${(currentTime!![Calendar.MONTH] + 1)}"
+            Toast.makeText(this, "MONTHLY ${ separate}", Toast.LENGTH_SHORT).show()
 
         } else if (period == YEARLY) {
             cTime[Calendar.DATE] = 1
