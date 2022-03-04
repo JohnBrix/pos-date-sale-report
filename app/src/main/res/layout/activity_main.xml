@@ -72,6 +72,7 @@
     </LinearLayout>
 
         <LinearLayout
+            android:gravity="bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -122,7 +123,6 @@
                         android:textColor="#ccf1f8"
                         android:textStyle="italic"
                         android:textAlignment="textStart" />
-
                 </LinearLayout>
 
 
@@ -138,8 +138,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#a97df6
-"
+                    android:background="#a97df6"
                     android:orientation="vertical"
                     android:paddingTop="20dp"
                     android:paddingBottom="20dp">
@@ -147,7 +146,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="1dp"
                         android:padding="1dp"
                         android:text="Weekly Sale"
                         android:layout_margin="5dp"
@@ -155,6 +153,7 @@
                         android:textSize="20dp"
                         android:textStyle="bold"
                         android:textAlignment="textStart" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -165,15 +164,37 @@
                         android:textColor="#ccf1f8"
                         android:textSize="25dp"
                         android:textAlignment="center" />
-                    <TextView
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="1dp"
-                        android:text="2022-02-1 - 2022-02-8"
-                        android:layout_margin="5dp"
-                        android:textColor="#ccf1f8"
-                        android:textStyle="italic"
-                        android:textAlignment="textStart" />
+                        android:layout_margin="3dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="2022-02-1"
+                            android:textAlignment="textStart"
+                            android:textColor="#ccf1f8"
+                            android:textStyle="italic" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="3dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="2022-02-8"
+                            android:textAlignment="textStart"
+                            android:textColor="#ccf1f8"
+                            android:textStyle="italic" />
+                    </LinearLayout>
+
 
                 </LinearLayout>
 
