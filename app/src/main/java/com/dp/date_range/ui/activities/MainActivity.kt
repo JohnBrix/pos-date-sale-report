@@ -7,10 +7,12 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.dp.date_range.DateTimeStrategy
 import com.dp.date_range.R
 import com.dp.date_range.databinding.ActivityMainBinding
+import com.dp.date_range.domain.networkEntities.request.HttpDailyDateRequest
 import com.dp.date_range.dto.DateRequest
 import com.dp.date_range.ui.viewmodel.MainActivityViewModel
 import java.util.*
@@ -201,6 +203,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun submitRe(request: DateRequest) {
+        //Creation Request
+
 
         binding.apply {
             submit.setOnClickListener {
@@ -212,9 +216,52 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 )
                     .show()
+
+                if (request.daily?.isNotEmpty() == true) {
+
+                    var mapRequest = HttpDailyDateRequest()
+                    mapRequest.selectedDate = request.daily
+                    vModel.getDailySaleTotal(applicationContext, mapRequest)
+                        .observe(this@MainActivity, Observer {it
+                            var statusCode: Int? = it.statusCode
+
+                            if (statusCode == 200) {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "200 $it",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+
+                            } else if (statusCode == 404) {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "404 $it",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            } else if (statusCode == 400) {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "400 $it",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            } else {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "DEFAULT $it",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+
+
+                        })
+                }
+
+
             }
-
-
         }
     }
 
