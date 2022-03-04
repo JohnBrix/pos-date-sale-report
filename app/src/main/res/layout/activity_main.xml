@@ -72,7 +72,8 @@
     </LinearLayout>
 
         <LinearLayout
-            android:gravity="bottom"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">

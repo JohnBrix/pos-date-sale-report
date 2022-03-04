@@ -1,4 +1,4 @@
-package com.dp.date_range.ui
+package com.dp.date_range.ui.activities
 
 import android.app.DatePickerDialog
 import android.os.Bundle
