@@ -1,49 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp" >
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="mainActivityViewModel"
+            type="com.dp.date_range.ui.viewmodel.MainActivityViewModel" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="20dp">
-        <TextView
-            android:id="@+id/currentBox"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_weight="0.5"
-            android:gravity="center"
-            android:textSize="5sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-        <Spinner
-            android:id="@+id/spinner1"
-            android:layout_width="0dip"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.3" />
+            android:layout_marginBottom="20dp">
 
-        <Button
-            android:id="@+id/previousButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btn_yellow"
-            android:text="@string/previous"
-            android:textSize="16sp" />
+            <TextView
+                android:id="@+id/currentBox"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:textSize="5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/nextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/btn_yellow"
-            android:text="@string/next"
-            android:textSize="16sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <Spinner
+                android:id="@+id/spinner1"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3" />
+
+            <Button
+                android:id="@+id/previousButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_yellow"
+                android:text="@string/previous"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/nextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_yellow"
+                android:text="@string/next"
+                android:textSize="16sp" />
+        </LinearLayout>
+
     </LinearLayout>
-
-</LinearLayout>
+</layout>
