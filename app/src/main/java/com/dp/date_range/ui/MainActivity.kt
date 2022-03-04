@@ -2,6 +2,7 @@ package com.dp.date_range.ui
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.dp.date_range.DateTimeStrategy
 import com.dp.date_range.R
 import com.dp.date_range.databinding.ActivityMainBinding
+import com.dp.date_range.dto.DateRequest
 import com.dp.date_range.ui.viewmodel.MainActivityViewModel
 import java.util.*
 
@@ -128,6 +130,11 @@ class MainActivity : AppCompatActivity() {
                 )
                     .show()
 
+                var request = DateRequest()
+                request.daily = d.getSQLDateFormat(currentTime)
+
+                submitRe(request)
+
             } else if (period == WEEKLY) {
                 while (cTime[Calendar.DAY_OF_WEEK] == Calendar.SUNDAY) {
                     cTime.add(Calendar.DATE, -1)
@@ -143,6 +150,12 @@ class MainActivity : AppCompatActivity() {
                 var separate = "${d.getSQLDateFormat(cTime)} and ${d.getSQLDateFormat(eTime)}"
                 Toast.makeText(applicationContext, "WEEKLY ${separate}", Toast.LENGTH_SHORT).show()
 
+                var request = DateRequest()
+                request.weeklyNow = d.getSQLDateFormat(cTime)
+                request.weeklyTo = d.getSQLDateFormat(eTime)
+
+                submitRe(request)
+
             } else if (period == MONTHLY) {
                 cTime[Calendar.DATE] = 1
                 eTime = cTime.clone() as Calendar
@@ -155,6 +168,12 @@ class MainActivity : AppCompatActivity() {
                 var separate =
                     "${currentTime!![Calendar.YEAR]} and ${(currentTime!![Calendar.MONTH] + 1)}"
                 Toast.makeText(applicationContext, "MONTHLY ${separate}", Toast.LENGTH_SHORT).show()
+
+                var request = DateRequest()
+                request.monthlyNumber = (currentTime!![Calendar.MONTH] + 1).toString()
+                request.monthlyYear = currentTime!![Calendar.YEAR].toString()
+
+                submitRe(request)
 
             } else if (period == YEARLY) {
                 cTime[Calendar.DATE] = 1
@@ -170,14 +189,32 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 )
                     .show()
+                var request = DateRequest()
+                request.yearly = currentTime!![Calendar.YEAR].toString()
 
+                submitRe(request)
             }
             currentTime = cTime
-            /*list = saleLedger.getAllSaleDuring(cTime, eTime)*/
             var total = 0.0
-            /*  for (sale in list) total += sale.getTotal()*/
-            /*  totalBox.text = total.toString() + ""*/
-            /* showList(list)*/
+
+        }
+    }
+
+    fun submitRe(request: DateRequest) {
+
+        binding.apply {
+            submit.setOnClickListener {
+                Log.i(TAG, request.toString())
+
+                Toast.makeText(
+                    applicationContext,
+                    "REQUEST $request",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+            }
+
+
         }
     }
 
