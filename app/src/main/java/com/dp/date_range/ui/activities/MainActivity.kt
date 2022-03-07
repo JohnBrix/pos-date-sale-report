@@ -15,6 +15,7 @@ import com.dp.date_range.databinding.ActivityMainBinding
 import com.dp.date_range.domain.networkEntities.request.HttpDailyDateRequest
 import com.dp.date_range.domain.networkEntities.request.HttpMonthlyRequest
 import com.dp.date_range.domain.networkEntities.request.HttpWeeklyRequest
+import com.dp.date_range.domain.networkEntities.request.HttpYearlyRequest
 import com.dp.date_range.dto.DateRequest
 import com.dp.date_range.ui.viewmodel.MainActivityViewModel
 import java.util.*
@@ -239,6 +240,12 @@ class MainActivity : AppCompatActivity() {
 
                     getMonthlySaleTotal(mapRequest)
                 }
+                else if (request.yearly?.isNotEmpty()== true){
+                    var mapRequest = HttpYearlyRequest()
+                    mapRequest.selectedDate = request.yearly
+
+                    getYearlySaleTotal(mapRequest)
+                }
 
 
             }
@@ -394,6 +401,56 @@ class MainActivity : AppCompatActivity() {
                             .show()
                         monthLyTotal.text = "₱ 0.0"
                         monthLyDate.text = it.resultMessage
+                    }
+                })
+        }
+    }
+    private fun getYearlySaleTotal(mapRequest: HttpYearlyRequest){
+        binding.apply {
+
+            vModel.getYearlyTotal(applicationContext, mapRequest)
+                .observe(this@MainActivity, Observer {
+                    it
+                    var statusCode: Int? = it.statusCode
+
+                    if (statusCode == 200) {
+                        Toast.makeText(
+                            applicationContext,
+                            "200 $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        val rounded = String.format("%.2f", it.yearlySaleTotal)
+                        yearlyTotal.text = ("₱ ${rounded}")
+                        dateYearly.text = mapRequest.selectedDate
+                    } else if (statusCode == 404) {
+                        Toast.makeText(
+                            applicationContext,
+                            "404 $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        yearlyTotal.text = "₱ 0.0"
+                        dateYearly.text = it.resultMessage
+                    } else if (statusCode == 400) {
+                        Toast.makeText(
+                            applicationContext,
+                            "400 $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+
+                        yearlyTotal.text = "₱ 0.0"
+                        dateYearly.text = it.resultMessage
+                    } else {
+                        Toast.makeText(
+                            applicationContext,
+                            "DEFAULT $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        yearlyTotal.text = "₱ 0.0"
+                        dateYearly.text = it.resultMessage
                     }
                 })
         }
