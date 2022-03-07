@@ -13,6 +13,7 @@ import com.dp.date_range.DateTimeStrategy
 import com.dp.date_range.R
 import com.dp.date_range.databinding.ActivityMainBinding
 import com.dp.date_range.domain.networkEntities.request.HttpDailyDateRequest
+import com.dp.date_range.domain.networkEntities.request.HttpWeeklyRequest
 import com.dp.date_range.dto.DateRequest
 import com.dp.date_range.ui.viewmodel.MainActivityViewModel
 import java.util.*
@@ -135,7 +136,7 @@ class MainActivity : AppCompatActivity() {
                 var request = DateRequest()
                 request.daily = d.getSQLDateFormat(currentTime)
 
-                submitRe(request)
+                getSale(request)
 
             } else if (period == WEEKLY) {
                 while (cTime[Calendar.DAY_OF_WEEK] == Calendar.SUNDAY) {
@@ -156,7 +157,7 @@ class MainActivity : AppCompatActivity() {
                 request.weeklyNow = d.getSQLDateFormat(cTime)
                 request.weeklyTo = d.getSQLDateFormat(eTime)
 
-                submitRe(request)
+                getSale(request)
 
             } else if (period == MONTHLY) {
                 cTime[Calendar.DATE] = 1
@@ -175,7 +176,7 @@ class MainActivity : AppCompatActivity() {
                 request.monthlyNumber = (currentTime!![Calendar.MONTH] + 1).toString()
                 request.monthlyYear = currentTime!![Calendar.YEAR].toString()
 
-                submitRe(request)
+                getSale(request)
 
             } else if (period == YEARLY) {
                 cTime[Calendar.DATE] = 1
@@ -194,7 +195,7 @@ class MainActivity : AppCompatActivity() {
                 var request = DateRequest()
                 request.yearly = currentTime!![Calendar.YEAR].toString()
 
-                submitRe(request)
+                getSale(request)
             }
             currentTime = cTime
             var total = 0.0
@@ -202,7 +203,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun submitRe(request: DateRequest) {
+    fun getSale(request: DateRequest) {
         //Creation Request
         binding.apply {
             submit.setOnClickListener {
@@ -220,56 +221,123 @@ class MainActivity : AppCompatActivity() {
                     var mapRequest = HttpDailyDateRequest()
                     mapRequest.selectedDate = request.daily
 
-                    vModel.getDailySaleTotal(applicationContext, mapRequest)
-                        .observe(this@MainActivity, Observer {it
-                            var statusCode: Int? = it.statusCode
+                    getDailySaleTotal(mapRequest)
+                }
 
-                            if (statusCode == 200) {
-                                Toast.makeText(
-                                    applicationContext,
-                                    "200 $it",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                                val rounded = String.format("%.2f", it.dailySaleTotal)
-                                dailyTotal.text= ("₱ ${rounded}")
-                                dailyDate.text = mapRequest.selectedDate
+                else if(request.weeklyNow?.isNotEmpty() == true && request.weeklyTo?.isNotEmpty() == true){
+                    var mapRequest = HttpWeeklyRequest()
+                    mapRequest.selectedNow = request.weeklyNow
+                    mapRequest.selectedTo = request.weeklyTo
 
-                            } else if (statusCode == 404) {
-                                Toast.makeText(
-                                    applicationContext,
-                                    "404 $it",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                                dailyTotal.text = "₱ 0.0"
-                                dailyDate.text = it.resultMessage
-                            } else if (statusCode == 400) {
-                                Toast.makeText(
-                                    applicationContext,
-                                    "400 $it",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-
-                                dailyTotal.text = "₱ 0.0"
-                                dailyDate.text = it.resultMessage
-                            } else {
-                                Toast.makeText(
-                                    applicationContext,
-                                    "DEFAULT $it",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                                dailyTotal.text = "₱ 0.0"
-                                dailyDate.text = it.resultMessage
-                            }
-
-                        })
+                    getWeeklySaleTotal(mapRequest)
                 }
 
 
             }
+        }
+    }
+
+    private fun getDailySaleTotal(mapRequest: HttpDailyDateRequest) {
+        binding.apply {
+
+            vModel.getDailySaleTotal(applicationContext, mapRequest)
+                .observe(this@MainActivity, Observer {
+                    it
+                    var statusCode: Int? = it.statusCode
+
+                    if (statusCode == 200) {
+                        Toast.makeText(
+                            applicationContext,
+                            "200 $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        val rounded = String.format("%.2f", it.dailySaleTotal)
+                        dailyTotal.text = ("₱ ${rounded}")
+                        dailyDate.text = mapRequest.selectedDate
+
+                    } else if (statusCode == 404) {
+                        Toast.makeText(
+                            applicationContext,
+                            "404 $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        dailyTotal.text = "₱ 0.0"
+                        dailyDate.text = it.resultMessage
+                    } else if (statusCode == 400) {
+                        Toast.makeText(
+                            applicationContext,
+                            "400 $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+
+                        dailyTotal.text = "₱ 0.0"
+                        dailyDate.text = it.resultMessage
+                    } else {
+                        Toast.makeText(
+                            applicationContext,
+                            "DEFAULT $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        dailyTotal.text = "₱ 0.0"
+                        dailyDate.text = it.resultMessage
+                    }
+                })
+        }
+    }
+    private fun getWeeklySaleTotal(mapRequest: HttpWeeklyRequest) {
+        binding.apply {
+
+            vModel.getWeeklySaleTotal(applicationContext, mapRequest)
+                .observe(this@MainActivity, Observer {
+                    it
+                    var statusCode: Int? = it.statusCode
+
+                    if (statusCode == 200) {
+                        Toast.makeText(
+                            applicationContext,
+                            "200 $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        val rounded = String.format("%.2f", it.weeklySaleTotal)
+                        weeklyTotal.text = ("₱ ${rounded}")
+                        weeklyNow.text = mapRequest.selectedNow
+                        weeklyTo.text = mapRequest.selectedTo
+
+                    } else if (statusCode == 404) {
+                        Toast.makeText(
+                            applicationContext,
+                            "404 $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        weeklyTotal.text = "₱ 0.0"
+                        weeklyNow.text = it.resultMessage
+                    } else if (statusCode == 400) {
+                        Toast.makeText(
+                            applicationContext,
+                            "400 $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+
+                        weeklyTotal.text = "₱ 0.0"
+                        weeklyNow.text = it.resultMessage
+                    } else {
+                        Toast.makeText(
+                            applicationContext,
+                            "DEFAULT $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        weeklyTotal.text = "₱ 0.0"
+                        weeklyNow.text = it.resultMessage
+                    }
+                })
         }
     }
 

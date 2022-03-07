@@ -7,7 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import com.dp.date_range.data.constant.DateV1
 import com.dp.date_range.data.retrofit.RetrofitClient
 import com.dp.date_range.domain.networkEntities.request.HttpDailyDateRequest
+import com.dp.date_range.domain.networkEntities.request.HttpWeeklyRequest
 import com.dp.date_range.domain.networkEntities.response.HttpDailyDateResponse
+import com.dp.date_range.domain.networkEntities.response.HttpWeeklyDateResponse
 import com.google.gson.Gson
 import com.zaiko.repositories.Date
 import retrofit2.Call
@@ -54,6 +56,52 @@ class DateRepository : Date {
                 Log.e("OnError: ", "${call} & ${t.message}")
                 var prod = HttpDailyDateResponse()
                 var httpProd = HttpDailyDateResponse()
+                httpProd.resultMessage = "NO_CONTENT"
+                Log.i(TAG, "${prod}")
+                liveData.value = prod
+            }
+
+        })
+        Log.i(TAG, "${liveData.value}")
+        return liveData
+    }
+
+    fun getWeeklySale(context: Context, request: HttpWeeklyRequest)
+            : LiveData<HttpWeeklyDateResponse> {
+        var liveData = MutableLiveData<HttpWeeklyDateResponse>()
+
+        val userService: DateV1 = retrofit.getWeeklySale(context)
+            .create(DateV1::class.java)
+        var call: Call<HttpWeeklyDateResponse> =
+            userService.getWeeklySale(request)
+
+        call.enqueue(object : Callback<HttpWeeklyDateResponse?> {
+            override fun onResponse(
+                call: Call<HttpWeeklyDateResponse?>,
+                response: Response<HttpWeeklyDateResponse?>
+            ) {
+
+                if (response.code() == 200) {
+                    Log.i(TAG, "${response.body()}")
+                    liveData.value = response.body()
+                } else {
+                    var product = HttpWeeklyDateResponse()
+                    var gson = Gson();
+                    var adapter = gson.getAdapter(HttpWeeklyDateResponse::class.java)
+
+                    if (response.errorBody() != null)
+                        product = adapter.fromJson(response.errorBody()?.string())
+
+                    Log.i(TAG, "${product}")
+                    liveData.value = product
+                }
+
+            }
+
+            override fun onFailure(call: Call<HttpWeeklyDateResponse?>, t: Throwable) {
+                Log.e("OnError: ", "${call} & ${t.message}")
+                var prod = HttpWeeklyDateResponse()
+                var httpProd = HttpWeeklyDateResponse()
                 httpProd.resultMessage = "NO_CONTENT"
                 Log.i(TAG, "${prod}")
                 liveData.value = prod

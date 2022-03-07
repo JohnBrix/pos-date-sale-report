@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.dp.date_range.domain.networkEntities.request.HttpDailyDateRequest
+import com.dp.date_range.domain.networkEntities.request.HttpWeeklyRequest
 import com.dp.date_range.domain.networkEntities.response.HttpDailyDateResponse
+import com.dp.date_range.domain.networkEntities.response.HttpWeeklyDateResponse
 import com.dp.date_range.repositories.impl.DateRepository
 
 class MainActivityViewModel: ViewModel() {
@@ -14,5 +16,9 @@ class MainActivityViewModel: ViewModel() {
     fun getDailySaleTotal(context: Context,request: HttpDailyDateRequest): LiveData<HttpDailyDateResponse> {
 
         return dateRepo.getDailySale(context,request)
+    }
+    fun getWeeklySaleTotal(context: Context,request: HttpWeeklyRequest): LiveData<HttpWeeklyDateResponse> {
+
+        return dateRepo.getWeeklySale(context,request)
     }
 }
