@@ -13,6 +13,7 @@ import com.dp.date_range.DateTimeStrategy
 import com.dp.date_range.R
 import com.dp.date_range.databinding.ActivityMainBinding
 import com.dp.date_range.domain.networkEntities.request.HttpDailyDateRequest
+import com.dp.date_range.domain.networkEntities.request.HttpMonthlyRequest
 import com.dp.date_range.domain.networkEntities.request.HttpWeeklyRequest
 import com.dp.date_range.dto.DateRequest
 import com.dp.date_range.ui.viewmodel.MainActivityViewModel
@@ -231,6 +232,13 @@ class MainActivity : AppCompatActivity() {
 
                     getWeeklySaleTotal(mapRequest)
                 }
+                else if (request.monthlyNumber?.isNotEmpty() == true && request.monthlyYear?.isNotEmpty() == true){
+                    var mapRequest = HttpMonthlyRequest()
+                    mapRequest.selectedDate = request.monthlyYear
+                    mapRequest.selectedMonth = request.monthlyNumber
+
+                    getMonthlySaleTotal(mapRequest)
+                }
 
 
             }
@@ -336,6 +344,56 @@ class MainActivity : AppCompatActivity() {
                             .show()
                         weeklyTotal.text = "₱ 0.0"
                         weeklyNow.text = it.resultMessage
+                    }
+                })
+        }
+    }
+    private fun getMonthlySaleTotal(mapRequest: HttpMonthlyRequest) {
+        binding.apply {
+
+            vModel.getMonthlyTotal(applicationContext, mapRequest)
+                .observe(this@MainActivity, Observer {
+                    it
+                    var statusCode: Int? = it.statusCode
+
+                    if (statusCode == 200) {
+                        Toast.makeText(
+                            applicationContext,
+                            "200 $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        val rounded = String.format("%.2f", it.monthlySaleTotal)
+                        monthLyTotal.text = ("₱ ${rounded}")
+                        monthLyDate.text = mapRequest.selectedDate
+                    } else if (statusCode == 404) {
+                        Toast.makeText(
+                            applicationContext,
+                            "404 $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        monthLyTotal.text = "₱ 0.0"
+                        monthLyDate.text = it.resultMessage
+                    } else if (statusCode == 400) {
+                        Toast.makeText(
+                            applicationContext,
+                            "400 $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+
+                        monthLyTotal.text = "₱ 0.0"
+                        monthLyDate.text = it.resultMessage
+                    } else {
+                        Toast.makeText(
+                            applicationContext,
+                            "DEFAULT $it",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        monthLyTotal.text = "₱ 0.0"
+                        monthLyDate.text = it.resultMessage
                     }
                 })
         }

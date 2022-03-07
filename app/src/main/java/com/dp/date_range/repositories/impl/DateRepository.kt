@@ -7,8 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import com.dp.date_range.data.constant.DateV1
 import com.dp.date_range.data.retrofit.RetrofitClient
 import com.dp.date_range.domain.networkEntities.request.HttpDailyDateRequest
+import com.dp.date_range.domain.networkEntities.request.HttpMonthlyRequest
 import com.dp.date_range.domain.networkEntities.request.HttpWeeklyRequest
 import com.dp.date_range.domain.networkEntities.response.HttpDailyDateResponse
+import com.dp.date_range.domain.networkEntities.response.HttpMonthlySaleResponse
 import com.dp.date_range.domain.networkEntities.response.HttpWeeklyDateResponse
 import com.google.gson.Gson
 import com.zaiko.repositories.Date
@@ -102,6 +104,52 @@ class DateRepository : Date {
                 Log.e("OnError: ", "${call} & ${t.message}")
                 var prod = HttpWeeklyDateResponse()
                 var httpProd = HttpWeeklyDateResponse()
+                httpProd.resultMessage = "NO_CONTENT"
+                Log.i(TAG, "${prod}")
+                liveData.value = prod
+            }
+
+        })
+        Log.i(TAG, "${liveData.value}")
+        return liveData
+    }
+
+    fun getMonthly(context: Context, request: HttpMonthlyRequest)
+            : LiveData<HttpMonthlySaleResponse> {
+        var liveData = MutableLiveData<HttpMonthlySaleResponse>()
+
+        val userService: DateV1 = retrofit.getMonthlySale(context)
+            .create(DateV1::class.java)
+        var call: Call<HttpMonthlySaleResponse> =
+            userService.getMonthLySale(request)
+
+        call.enqueue(object : Callback<HttpMonthlySaleResponse?> {
+            override fun onResponse(
+                call: Call<HttpMonthlySaleResponse?>,
+                response: Response<HttpMonthlySaleResponse?>
+            ) {
+
+                if (response.code() == 200) {
+                    Log.i(TAG, "${response.body()}")
+                    liveData.value = response.body()
+                } else {
+                    var product = HttpMonthlySaleResponse()
+                    var gson = Gson();
+                    var adapter = gson.getAdapter(HttpMonthlySaleResponse::class.java)
+
+                    if (response.errorBody() != null)
+                        product = adapter.fromJson(response.errorBody()?.string())
+
+                    Log.i(TAG, "${product}")
+                    liveData.value = product
+                }
+
+            }
+
+            override fun onFailure(call: Call<HttpMonthlySaleResponse?>, t: Throwable) {
+                Log.e("OnError: ", "${call} & ${t.message}")
+                var prod = HttpMonthlySaleResponse()
+                var httpProd = HttpMonthlySaleResponse()
                 httpProd.resultMessage = "NO_CONTENT"
                 Log.i(TAG, "${prod}")
                 liveData.value = prod
