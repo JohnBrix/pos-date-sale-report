@@ -204,8 +204,6 @@ class MainActivity : AppCompatActivity() {
 
     fun submitRe(request: DateRequest) {
         //Creation Request
-
-
         binding.apply {
             submit.setOnClickListener {
                 Log.i(TAG, request.toString())
@@ -221,6 +219,7 @@ class MainActivity : AppCompatActivity() {
 
                     var mapRequest = HttpDailyDateRequest()
                     mapRequest.selectedDate = request.daily
+
                     vModel.getDailySaleTotal(applicationContext, mapRequest)
                         .observe(this@MainActivity, Observer {it
                             var statusCode: Int? = it.statusCode
@@ -232,6 +231,9 @@ class MainActivity : AppCompatActivity() {
                                     Toast.LENGTH_SHORT
                                 )
                                     .show()
+                                val rounded = String.format("%.2f", it.dailySaleTotal)
+                                dailyTotal.text= ("₱ ${rounded}")
+                                dailyDate.text = mapRequest.selectedDate
 
                             } else if (statusCode == 404) {
                                 Toast.makeText(
@@ -240,6 +242,8 @@ class MainActivity : AppCompatActivity() {
                                     Toast.LENGTH_SHORT
                                 )
                                     .show()
+                                dailyTotal.text = "₱ 0.0"
+                                dailyDate.text = it.resultMessage
                             } else if (statusCode == 400) {
                                 Toast.makeText(
                                     applicationContext,
@@ -247,6 +251,9 @@ class MainActivity : AppCompatActivity() {
                                     Toast.LENGTH_SHORT
                                 )
                                     .show()
+
+                                dailyTotal.text = "₱ 0.0"
+                                dailyDate.text = it.resultMessage
                             } else {
                                 Toast.makeText(
                                     applicationContext,
@@ -254,8 +261,9 @@ class MainActivity : AppCompatActivity() {
                                     Toast.LENGTH_SHORT
                                 )
                                     .show()
+                                dailyTotal.text = "₱ 0.0"
+                                dailyDate.text = it.resultMessage
                             }
-
 
                         })
                 }
