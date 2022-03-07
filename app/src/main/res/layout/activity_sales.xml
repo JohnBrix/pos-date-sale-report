@@ -5,8 +5,8 @@
     <data>
 
         <variable
-            name="mainActivityViewModel"
-            type="com.dp.date_range.ui.viewmodel.MainActivityViewModel" />
+            name="saleViewModel"
+            type="com.dp.date_range.ui.viewmodel.SaleViewModel" />
     </data>
 
     <LinearLayout
@@ -70,6 +70,14 @@
             android:text="Submit"
             android:textSize="16sp" />
     </LinearLayout>
+        <com.github.ybq.android.spinkit.SpinKitView
+            android:id="@+id/saleLoadingScreen"
+            style="@style/SpinKitView.Large.ThreeBounce"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            app:SpinKit_Color="#9b59b6" />
 
         <LinearLayout
             android:layout_marginTop="10dp"

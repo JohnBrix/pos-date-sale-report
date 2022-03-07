@@ -54,6 +54,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
     /*Chuck impl*/
     debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
+    //spinkit
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'

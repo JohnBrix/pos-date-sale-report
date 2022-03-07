@@ -13,7 +13,7 @@ import com.dp.date_range.domain.networkEntities.response.HttpWeeklyDateResponse
 import com.dp.date_range.domain.networkEntities.response.HttpYearlyResponse
 import com.dp.date_range.repositories.impl.DateRepository
 
-class MainActivityViewModel: ViewModel() {
+class SaleViewModel: ViewModel() {
 
     private var dateRepo = DateRepository()
 

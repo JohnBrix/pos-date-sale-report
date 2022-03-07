@@ -11,19 +11,18 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.dp.date_range.DateTimeStrategy
 import com.dp.date_range.R
-import com.dp.date_range.databinding.ActivityMainBinding
+import com.dp.date_range.databinding.ActivitySalesBinding
 import com.dp.date_range.domain.networkEntities.request.HttpDailyDateRequest
 import com.dp.date_range.domain.networkEntities.request.HttpMonthlyRequest
 import com.dp.date_range.domain.networkEntities.request.HttpWeeklyRequest
 import com.dp.date_range.domain.networkEntities.request.HttpYearlyRequest
 import com.dp.date_range.dto.DateRequest
-import com.dp.date_range.ui.viewmodel.MainActivityViewModel
+import com.dp.date_range.ui.listener.SafeClickListener
+import com.dp.date_range.ui.viewmodel.SaleViewModel
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class SaleActivity : AppCompatActivity() {
 
-
-    var saleList: List<Map<String, String>>? = null
     lateinit var currentTime: Calendar
 
     val DAILY = 0
@@ -31,39 +30,27 @@ class MainActivity : AppCompatActivity() {
     val MONTHLY = 2
     val YEARLY = 3
 
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var vModel: MainActivityViewModel
+    private lateinit var binding: ActivitySalesBinding
+    private lateinit var vModel: SaleViewModel
     private var TAG = "MainActivity: "
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_sales)
         binding =
-            DataBindingUtil.setContentView(this@MainActivity, R.layout.activity_main)
-        vModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
-        binding.mainActivityViewModel = vModel
-        binding.lifecycleOwner = this@MainActivity
+            DataBindingUtil.setContentView(this@SaleActivity, R.layout.activity_sales)
+        vModel = ViewModelProvider(this).get(SaleViewModel::class.java)
+        binding.saleViewModel = vModel
+        binding.lifecycleOwner = this@SaleActivity
         supportActionBar?.hide()
 
 
         DateTimeStrategy()
 
-        /*previousButton = findViewById<Button>(R.id.previousButton)
-        nextButton = findViewById<Button>(R.id.nextButton)
-        currentBox = findViewById<TextView>(R.id.currentBox)
-       //saleLedgerListView = findViewById<ListView>(R.id.saleListView)
-        //totalBox = findViewById<TextView>(R.id.totalBox)
-        spinner = findViewById<Spinner>(R.id.spinner1)*/
+        binding.saleLoadingScreen.visibility = View.GONE
         initUI()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // update();
-        // it shouldn't call update() anymore. Because super.onResume()
-        // already fired the action of spinner.onItemSelected()
     }
 
     private fun initUI() {
@@ -71,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         binding.apply {
             currentTime = Calendar.getInstance()
             var datePicker: DatePickerDialog = DatePickerDialog(
-                this@MainActivity,
+                this@SaleActivity,
                 { view, y, m, d ->
                     currentTime.set(Calendar.YEAR, y)
                     currentTime.set(Calendar.MONTH, m)
@@ -83,7 +70,7 @@ class MainActivity : AppCompatActivity() {
             )
 
             val adapter = ArrayAdapter.createFromResource(
-                this@MainActivity,
+                this@SaleActivity,
                 R.array.period, android.R.layout.simple_spinner_item
             )
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -104,14 +91,6 @@ class MainActivity : AppCompatActivity() {
             currentBox.setOnClickListener { datePicker.show() }
             previousButton.setOnClickListener { addDate(-1) }
             nextButton!!.setOnClickListener { addDate(1) }
-            /*saleLedgerListView!!.onItemClickListener =
-                OnItemClickListener { myAdapter, myView, position, mylng ->
-                    val id = saleList!![position]["id"].toString()
-                    val newActivity =
-                        Intent(applicationContext, MainActivity::class.java)
-                    newActivity.putExtra("id", id)
-                    startActivity(newActivity)
-                }*/
         }
     }
 
@@ -206,9 +185,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getSale(request: DateRequest) {
-        //Creation Request
+
         binding.apply {
-            submit.setOnClickListener {
+
+
+            submit.setSafeOnClickListener {
                 Log.i(TAG, request.toString())
 
                 Toast.makeText(
@@ -219,7 +200,7 @@ class MainActivity : AppCompatActivity() {
                     .show()
 
                 if (request.daily?.isNotEmpty() == true) {
-
+                    saleLoadingScreen.visibility = View.VISIBLE
                     var mapRequest = HttpDailyDateRequest()
                     mapRequest.selectedDate = request.daily
 
@@ -227,6 +208,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 else if(request.weeklyNow?.isNotEmpty() == true && request.weeklyTo?.isNotEmpty() == true){
+                    saleLoadingScreen.visibility = View.VISIBLE
                     var mapRequest = HttpWeeklyRequest()
                     mapRequest.selectedNow = request.weeklyNow
                     mapRequest.selectedTo = request.weeklyTo
@@ -234,6 +216,7 @@ class MainActivity : AppCompatActivity() {
                     getWeeklySaleTotal(mapRequest)
                 }
                 else if (request.monthlyNumber?.isNotEmpty() == true && request.monthlyYear?.isNotEmpty() == true){
+                    saleLoadingScreen.visibility = View.VISIBLE
                     var mapRequest = HttpMonthlyRequest()
                     mapRequest.selectedDate = request.monthlyYear
                     mapRequest.selectedMonth = request.monthlyNumber
@@ -241,6 +224,7 @@ class MainActivity : AppCompatActivity() {
                     getMonthlySaleTotal(mapRequest)
                 }
                 else if (request.yearly?.isNotEmpty()== true){
+                    saleLoadingScreen.visibility = View.VISIBLE
                     var mapRequest = HttpYearlyRequest()
                     mapRequest.selectedDate = request.yearly
 
@@ -256,7 +240,7 @@ class MainActivity : AppCompatActivity() {
         binding.apply {
 
             vModel.getDailySaleTotal(applicationContext, mapRequest)
-                .observe(this@MainActivity, Observer {
+                .observe(this@SaleActivity, Observer {
                     it
                     var statusCode: Int? = it.statusCode
 
@@ -267,6 +251,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
                         val rounded = String.format("%.2f", it.dailySaleTotal)
                         dailyTotal.text = ("₱ ${rounded}")
                         dailyDate.text = mapRequest.selectedDate
@@ -278,6 +263,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
                         dailyTotal.text = "₱ 0.0"
                         dailyDate.text = it.resultMessage
                     } else if (statusCode == 400) {
@@ -287,7 +273,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
-
+                        saleLoadingScreen.visibility = View.GONE
                         dailyTotal.text = "₱ 0.0"
                         dailyDate.text = it.resultMessage
                     } else {
@@ -297,6 +283,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
                         dailyTotal.text = "₱ 0.0"
                         dailyDate.text = it.resultMessage
                     }
@@ -307,7 +294,7 @@ class MainActivity : AppCompatActivity() {
         binding.apply {
 
             vModel.getWeeklySaleTotal(applicationContext, mapRequest)
-                .observe(this@MainActivity, Observer {
+                .observe(this@SaleActivity, Observer {
                     it
                     var statusCode: Int? = it.statusCode
 
@@ -318,6 +305,8 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
+
                         val rounded = String.format("%.2f", it.weeklySaleTotal)
                         weeklyTotal.text = ("₱ ${rounded}")
                         weeklyNow.text = mapRequest.selectedNow
@@ -330,6 +319,8 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
+
                         weeklyTotal.text = "₱ 0.0"
                         weeklyNow.text = it.resultMessage
                     } else if (statusCode == 400) {
@@ -339,6 +330,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
 
                         weeklyTotal.text = "₱ 0.0"
                         weeklyNow.text = it.resultMessage
@@ -349,6 +341,8 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
+
                         weeklyTotal.text = "₱ 0.0"
                         weeklyNow.text = it.resultMessage
                     }
@@ -359,7 +353,7 @@ class MainActivity : AppCompatActivity() {
         binding.apply {
 
             vModel.getMonthlyTotal(applicationContext, mapRequest)
-                .observe(this@MainActivity, Observer {
+                .observe(this@SaleActivity, Observer {
                     it
                     var statusCode: Int? = it.statusCode
 
@@ -370,6 +364,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
                         val rounded = String.format("%.2f", it.monthlySaleTotal)
                         monthLyTotal.text = ("₱ ${rounded}")
                         monthLyDate.text = mapRequest.selectedDate
@@ -380,6 +375,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
                         monthLyTotal.text = "₱ 0.0"
                         monthLyDate.text = it.resultMessage
                     } else if (statusCode == 400) {
@@ -389,6 +385,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
 
                         monthLyTotal.text = "₱ 0.0"
                         monthLyDate.text = it.resultMessage
@@ -399,6 +396,8 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
+
                         monthLyTotal.text = "₱ 0.0"
                         monthLyDate.text = it.resultMessage
                     }
@@ -409,7 +408,7 @@ class MainActivity : AppCompatActivity() {
         binding.apply {
 
             vModel.getYearlyTotal(applicationContext, mapRequest)
-                .observe(this@MainActivity, Observer {
+                .observe(this@SaleActivity, Observer {
                     it
                     var statusCode: Int? = it.statusCode
 
@@ -420,6 +419,8 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
+
                         val rounded = String.format("%.2f", it.yearlySaleTotal)
                         yearlyTotal.text = ("₱ ${rounded}")
                         dateYearly.text = mapRequest.selectedDate
@@ -430,6 +431,8 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
+
                         yearlyTotal.text = "₱ 0.0"
                         dateYearly.text = it.resultMessage
                     } else if (statusCode == 400) {
@@ -439,6 +442,7 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
 
                         yearlyTotal.text = "₱ 0.0"
                         dateYearly.text = it.resultMessage
@@ -449,6 +453,8 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
+                        saleLoadingScreen.visibility = View.GONE
+
                         yearlyTotal.text = "₱ 0.0"
                         dateYearly.text = it.resultMessage
                     }
@@ -476,5 +482,11 @@ class MainActivity : AppCompatActivity() {
             }
             update()
         }
+    }
+    fun View.setSafeOnClickListener(onSafeClick: (View) -> Unit) {
+        val safeClickListener = SafeClickListener {
+            onSafeClick(it)
+        }
+        setOnClickListener(safeClickListener)
     }
 }
